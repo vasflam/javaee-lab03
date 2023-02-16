@@ -1,5 +1,6 @@
 package com.vasflam.lab03.group;
 
+import com.vasflam.lab03.common.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,36 +13,23 @@ public class GroupService {
     @Autowired
     private GroupRepository repository;
 
-    private void throwIfEmpty(@NotNull Optional<Group> g, String msg) throws Exception {
-        if (g.isEmpty()) {
-            throw new Exception(msg);
-        }
-    }
 
     public Iterable<Group> getGroups() { return repository.findAll(); }
 
     public Group getGroup(Long id) throws Exception {
         Optional<Group> g = repository.findById(id);
-        throwIfEmpty(g, String.format("Group with id='%d' not found", id));
+        Utils.throwIfEmpty(g, String.format("Group with id='%d' not found", id));
         Group group = g.get();
-        System.out.printf("%d - %s\n", group.getId(), group.getName());
-        this.repository.deleteById(id);
-        this.repository.delete(group);
-        System.out.printf("%d - %s\n", group.getId(), group.getName());
-        this.repository.deleteAll();
-        return group;
-    }
-
-
-    @Transactional
-    public Group deleteGroup(Group group) {
-        repository.delete(group);
         return group;
     }
 
     public Group deleteGroup(Long id) throws Exception {
         Group group = getGroup(id);
-        deleteGroup(group);
+        return deleteGroup(group);
+    }
+
+    public Group deleteGroup(Group group) throws Exception {
+        repository.deleteById(group.getId());
         return group;
     }
 

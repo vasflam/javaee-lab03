@@ -1,24 +1,25 @@
 package com.vasflam.lab03.group;
-
+import com.vasflam.lab03.common.ResourceAware;
 import jakarta.persistence.*;
-import org.springframework.data.domain.Persistable;
+import java.util.Set;
+import com.vasflam.lab03.common.BaseEntity;
+import com.vasflam.lab03.student.Student;
 
+/**
+ * @TODO: validation
+ */
 @Entity(name="groups")
-public class Group implements Persistable<Long> {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Group extends BaseEntity<Long> implements ResourceAware<GroupResource> {
+    @OneToMany(mappedBy = "group", cascade = CascadeType.REMOVE)
+    private Set<Student> students;
 
     @Column(unique = true)
     private String name;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public Group setName(String name) { this.name = name; return this; }
 
-    public boolean isNew() {
-        return id != null && id > 0 ? true : false;
+    public GroupResource toResource() {
+        return new GroupResource(this);
     }
 }
